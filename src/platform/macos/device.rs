@@ -16,7 +16,7 @@
 use std::ffi::CStr;
 use std::io::{self, Read, Write};
 use std::mem;
-use std::net::Ipv4Addr;
+use std::net::{IpAddr, Ipv4Addr};
 use std::os::unix::io::{AsRawFd, IntoRawFd, RawFd};
 use std::ptr;
 use std::sync::Arc;
@@ -128,9 +128,9 @@ impl Device {
 
         device.configure(config)?;
         device.set_alias(
-            config.address.unwrap_or(Ipv4Addr::new(10, 0, 0, 1)),
-            config.destination.unwrap_or(Ipv4Addr::new(10, 0, 0, 255)),
-            config.netmask.unwrap_or(Ipv4Addr::new(255, 255, 255, 0)),
+            config.address.unwrap_or(IpAddr::from(Ipv4Addr::new(10, 0, 0, 1))),
+            config.destination.unwrap_or(IpAddr::from(Ipv4Addr::new(10, 0, 0, 255))),
+            config.netmask.unwrap_or(IpAddr::from(Ipv4Addr::new(255, 255, 255, 0))),
         )?;
 
         Ok(device)
@@ -150,7 +150,7 @@ impl Device {
     }
 
     /// Set the IPv4 alias of the device.
-    pub fn set_alias(&mut self, addr: Ipv4Addr, broadaddr: Ipv4Addr, mask: Ipv4Addr) -> Result<()> {
+    pub fn set_alias(&mut self, addr: IpAddr, broadaddr: IpAddr, mask: IpAddr) -> Result<()> {
         unsafe {
             let mut req: ifaliasreq = mem::zeroed();
             ptr::copy_nonoverlapping(
@@ -246,7 +246,7 @@ impl D for Device {
         }
     }
 
-    fn address(&self) -> Result<Ipv4Addr> {
+    fn address(&self) -> Result<IpAddr> {
         unsafe {
             let mut req = self.request();
 
@@ -258,7 +258,7 @@ impl D for Device {
         }
     }
 
-    fn set_address(&mut self, value: Ipv4Addr) -> Result<()> {
+    fn set_address(&mut self, value: IpAddr) -> Result<()> {
         unsafe {
             let mut req = self.request();
             req.ifru.addr = SockAddr::from(value).into();
@@ -271,7 +271,7 @@ impl D for Device {
         }
     }
 
-    fn destination(&self) -> Result<Ipv4Addr> {
+    fn destination(&self) -> Result<IpAddr> {
         unsafe {
             let mut req = self.request();
 
@@ -283,7 +283,7 @@ impl D for Device {
         }
     }
 
-    fn set_destination(&mut self, value: Ipv4Addr) -> Result<()> {
+    fn set_destination(&mut self, value: IpAddr) -> Result<()> {
         unsafe {
             let mut req = self.request();
             req.ifru.dstaddr = SockAddr::from(value).into();
@@ -296,7 +296,7 @@ impl D for Device {
         }
     }
 
-    fn broadcast(&self) -> Result<Ipv4Addr> {
+    fn broadcast(&self) -> Result<IpAddr> {
         unsafe {
             let mut req = self.request();
 
@@ -308,7 +308,7 @@ impl D for Device {
         }
     }
 
-    fn set_broadcast(&mut self, value: Ipv4Addr) -> Result<()> {
+    fn set_broadcast(&mut self, value: IpAddr) -> Result<()> {
         unsafe {
             let mut req = self.request();
             req.ifru.broadaddr = SockAddr::from(value).into();
@@ -321,7 +321,7 @@ impl D for Device {
         }
     }
 
-    fn netmask(&self) -> Result<Ipv4Addr> {
+    fn netmask(&self) -> Result<IpAddr> {
         unsafe {
             let mut req = self.request();
 
@@ -333,7 +333,7 @@ impl D for Device {
         }
     }
 
-    fn set_netmask(&mut self, value: Ipv4Addr) -> Result<()> {
+    fn set_netmask(&mut self, value: IpAddr) -> Result<()> {
         unsafe {
             let mut req = self.request();
             req.ifru.addr = SockAddr::from(value).into();
